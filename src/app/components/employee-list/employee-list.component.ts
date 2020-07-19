@@ -8,7 +8,7 @@ import { Employee } from '../../interfaces/employee';
   styleUrls: ['./employee-list.component.scss']
 })
 export class EmployeeListComponent implements OnInit {
-  public employeeList: any;
+  public employeeList: Array<Employee>;
   constructor(private httpService: HttpService) { }
   @ViewChild('agGrid') agGrid: AgGridAngular;
   private numberFilter = {

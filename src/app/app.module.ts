@@ -9,7 +9,8 @@ import { HeaderComponent } from './components/shared/header/header.component';
 import { FooterComponent } from './components/shared/footer/footer.component';
 import { NotFoundComponent } from './components/shared/not-found/not-found.component';
 import { AgGridModule } from 'ag-grid-angular';
-
+import { ChartsModule } from 'ng2-charts';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +24,10 @@ import { AgGridModule } from 'ag-grid-angular';
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    AgGridModule.withComponents([])
+    AgGridModule.withComponents([]),
+    ChartsModule,
+    ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'}),
+    FormsModule,
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]

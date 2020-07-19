@@ -1,5 +1,30 @@
 <div class="container py-5">
     <div class="jumbotron">
-      <h1 class="text-secondary">Analytics page</h1>
+      <div>
+        <div>
+          <div style="display: block">
+            <canvas baseChart
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [plugins]="barChartPlugins"
+              [legend]="barChartLegend"
+              [chartType]="barChartType">
+            </canvas>
+          </div>
+          <div [formGroup]="yearForm">
+            <span class="mr-1">choice year:</span>
+            <select formControlName="value">
+              <option *ngFor="let year of listOfYears" [value]="year">{{year}}</option>
+            </select>
+          </div>
+          <div [formGroup]="monthForm">
+            <span class="mr-1">choice month:</span>
+            <select formControlName="value">
+              <option *ngFor="let month of listOfMonths" [value]="month">{{month}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
 </div>
