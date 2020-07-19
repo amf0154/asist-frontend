@@ -11,6 +11,7 @@ import { NotFoundComponent } from './components/shared/not-found/not-found.compo
 import { AgGridModule } from 'ag-grid-angular';
 import { ChartsModule } from 'ng2-charts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NewEmployeeComponent } from './components/new-employee/new-employee.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,7 +19,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AnalyticsComponent,
     HeaderComponent,
     FooterComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    NewEmployeeComponent
   ],
   imports: [
     BrowserModule,
