@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
-import { Label } from 'ng2-charts';
 import { Employee } from 'src/app/interfaces/employee';
 import { HttpService } from 'src/app/services/http.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import * as moment from 'moment';
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.component.html',
@@ -53,8 +51,6 @@ export class AnalyticsComponent implements OnInit {
     .subscribe((employee: Array<Employee>)=>{
       this.listOfYears = this.getListOfYears(this.employeeList = employee);
       this.setYearForm();
-      console.log(this.employeeList)
-      console.log(this.listOfYears)
     });
   }
   
@@ -67,7 +63,7 @@ export class AnalyticsComponent implements OnInit {
     
     this.monthForm.valueChanges.subscribe(res=>{
       if(res.value)
-      this.findDataForChart(res.value)
+      this.findDataForChart();
     });
   }
   
@@ -80,47 +76,46 @@ export class AnalyticsComponent implements OnInit {
     });
   }
 
-  findDataForChart(month){
+  findDataForChart(){
     const searchDate = this.yearForm.controls['value'].value + '-' + this.monthForm.controls['value'].value;
     const emplListBySelectedDate = this.employeeList.filter((res: any)=> res.date.includes(searchDate));
     this.barChartData[0].data = this.workHours = (emplListBySelectedDate.reduce((a,obj) =>{
-        a.push(obj.workingHours)
+      a.push(obj.workingHours)
       return [...new Set(a)]
-    },[]))
+    },[]));
     this.barChartData[2].data = this.sickHours = (emplListBySelectedDate.reduce((a,obj) =>{
       a.push(obj.sickHours)
-    return [...new Set(a)]
-  },[]))
-  this.barChartData[1].data = this.vacationHours = (emplListBySelectedDate.reduce((a,obj) =>{
-    a.push(obj.vacationHours)
-  return [...new Set(a)]
-},[]))
-  this.barChartLabels = this.employeeNames = (emplListBySelectedDate.reduce((a,obj) =>{
-    a.push(obj.name)
-  return [...new Set(a)]
-  },[]));
+      return [...new Set(a)]
+    },[]));
+    this.barChartData[1].data = this.vacationHours = (emplListBySelectedDate.reduce((a,obj) =>{
+      a.push(obj.vacationHours)
+      return [...new Set(a)]
+    },[]));
+    this.barChartLabels = this.employeeNames = (emplListBySelectedDate.reduce((a,obj) =>{
+      a.push(obj.name)
+      return [...new Set(a)]
+    },[]));
   }
 
   getListOfMonths(month){
     this.monthForm.reset();
-  this.listOfMonths =  this.employeeList.reduce((a,obj) =>{
+    this.listOfMonths =  this.employeeList.reduce((a,obj) =>{
       if(obj.date.split("-")[0] == month)
         a.push(obj.date.split("-")[1])
-      return [...new Set(a)]
+        return [...new Set(a)]
     },[]);
     setTimeout(()=>{
       this.monthForm.setValue({
         value: this.listOfMonths[0]
       })
-    },100)
-
+    },500);
   }
 
   getListOfYears(data){
     return data.reduce((a,obj) =>{
       a.push(obj.date.split("-")[0])
       return [...new Set(a)]
-    },[])
+    },[]);
   }
 
 }
