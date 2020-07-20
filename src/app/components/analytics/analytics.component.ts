@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { Employee } from 'src/app/interfaces/employee';
 import { HttpService } from 'src/app/services/http.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.scss']
 })
-export class AnalyticsComponent implements OnInit {
+export class AnalyticsComponent implements OnInit, OnDestroy {
   public barChartOptions: ChartOptions = {
     responsive: true,
     scales: { xAxes: [{}], yAxes: [{}] },
@@ -28,11 +29,10 @@ export class AnalyticsComponent implements OnInit {
   public employeeList: Array<Employee>;
   public listOfYears: Array<String>
   public listOfMonths: Array<String>
+  private yearFormSubscription: Subscription;
+  private monthFormSubscription: Subscription;
   yearForm: FormGroup;
   monthForm: FormGroup;
-  workHours: Array<Number> = new Array(0);
-  sickHours: Array<Number>= new Array(0);
-  vacationHours: Array<Number>= new Array(0);
   public barChartData = [
     { data: [], label: 'Work' },
     { data: [], label: 'Vacation' },
@@ -58,10 +58,10 @@ export class AnalyticsComponent implements OnInit {
     this.yearForm.setValue({
       value: this.listOfYears[0],
     });
-    this.yearForm.valueChanges.subscribe(res=>this.getListOfMonths(res.value));
+    this.yearFormSubscription = this.yearForm.valueChanges.subscribe(res=>this.getListOfMonths(res.value));
     this.getListOfMonths(this.listOfYears[0]);
     
-    this.monthForm.valueChanges.subscribe(res=>{
+    this.monthFormSubscription = this.monthForm.valueChanges.subscribe(res=>{
       if(res.value)
       this.findDataForChart();
     });
@@ -79,25 +79,25 @@ export class AnalyticsComponent implements OnInit {
   findDataForChart(){
     const searchDate = this.yearForm.controls['value'].value + '-' + this.monthForm.controls['value'].value;
     const emplListBySelectedDate = this.employeeList.filter((res: any)=> res.date.includes(searchDate));
-    this.barChartData[0].data = this.workHours = (emplListBySelectedDate.reduce((a,obj) =>{
+    this.barChartData[0].data = (emplListBySelectedDate.reduce((a,obj) =>{
       a.push(obj.workingHours)
       return [...new Set(a)]
     },[]));
-    this.barChartData[2].data = this.sickHours = (emplListBySelectedDate.reduce((a,obj) =>{
+    this.barChartData[2].data = (emplListBySelectedDate.reduce((a,obj) =>{
       a.push(obj.sickHours)
       return [...new Set(a)]
     },[]));
-    this.barChartData[1].data = this.vacationHours = (emplListBySelectedDate.reduce((a,obj) =>{
+    this.barChartData[1].data = (emplListBySelectedDate.reduce((a,obj) =>{
       a.push(obj.vacationHours)
       return [...new Set(a)]
     },[]));
-    this.barChartLabels = this.employeeNames = (emplListBySelectedDate.reduce((a,obj) =>{
+    this.barChartLabels = (emplListBySelectedDate.reduce((a,obj) =>{
       a.push(obj.name)
       return [...new Set(a)]
     },[]));
   }
 
-  getListOfMonths(month){
+  getListOfMonths(month: number | String){
     this.monthForm.reset();
     this.listOfMonths =  this.employeeList.reduce((a,obj) =>{
       if(obj.date.split("-")[0] == month)
@@ -111,11 +111,16 @@ export class AnalyticsComponent implements OnInit {
     },500);
   }
 
-  getListOfYears(data){
+  getListOfYears(data: Employee[]){
     return data.reduce((a,obj) =>{
       a.push(obj.date.split("-")[0])
       return [...new Set(a)]
     },[]);
+  }
+
+  ngOnDestroy(): void {
+    this.yearFormSubscription.unsubscribe();
+    this.monthFormSubscription.unsubscribe();
   }
 
 }
